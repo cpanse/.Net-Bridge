@@ -95,8 +95,23 @@
             else
                 mono)
 
-            message ("NOTE: starting CLR server")
             system2 (exe, args, wait=FALSE, stderr=FALSE, stdout=FALSE)
+            Sys.sleep(2)
+            if (internal_ctest_connection (host, port))
+            {
+                message ("NOTE: started CLR server.")
+            }else{
+                args.nollvm <- gsub("--llvm", "--nollvm", args)
+                system2 (exe, args.nollvm, wait=FALSE, stderr=FALSE, stdout=FALSE)
+                Sys.sleep(1)
+                
+                if (internal_ctest_connection (host, port))
+                {
+                    message ("NOTE: started CLR server with --nollvm option.")
+                }else{
+                    message ("NOTE: starting CLR server failed; try command line.")
+                }
+            }
         }
         
         internal_cinit(host, port)
